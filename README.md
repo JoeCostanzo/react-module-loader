@@ -1,3 +1,5 @@
+[![NPM](https://nodei.co/npm/react-module-loader.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/react-module-loader/)
+
 # React Module Loader
 
 Loads ES6 modules (functions, etc) into interactive React component views.
