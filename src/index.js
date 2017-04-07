@@ -1,9 +1,10 @@
 import React from 'react';
-
+const log = console.log;
 // TODO: Make each input more explicitly indicate required params / specs
 // TODO: error messaging if mis-called
+// TODO: perhaps need attention for handling 'object' type param functions
 
-let results = {};
+let astFacts = {};
 let keptValues = {};
 
 class ReactModuleLoader extends React.Component {
@@ -19,39 +20,30 @@ class ReactModuleLoader extends React.Component {
     ) {
       Object.keys(mounted[functionsKeyName]).map((k, i) => {
         if (k) {
-          results[k] = {};
+          astFacts[k] = {};
           const ind = mounted[astKeyName].length
             && (mounted[astKeyName].findIndex(obj => obj.name === k));
           if (
             typeof ind === 'number'
             && mounted[astKeyName][ind]
           ) {
-            results[k].description = ind
-              && (mounted[astKeyName][ind].description)
-              && (mounted[astKeyName][ind].description) || 'none';
-            results[k].params = mounted[astKeyName][ind].params && (mounted[astKeyName][ind].params.length) ? {} : 'none';
-            if (
-              typeof results[k].params === 'object'
-            ) {
-              mounted[astKeyName][ind].params.map((p, i) => {
-                results[k].params[`p${i}_types`] = p && (p.type)
-                && (p.type.names) ? p.type.names : 'none';
-              });
-            }
+            astFacts[k] = {...mounted[astKeyName][ind]};
+            !astFacts[k].description && (astFacts[k].description = 'none');
+            !astFacts[k].params || !astFacts[k].params.length && (astFacts[k].params = 'none');
           }
 
         }
       });
     }
-    this.state = { results };
+    this.state = { astFacts };
 
-    this.flexHandler = this.flexHandler.bind(this);
+    this.moduleFuncCaller = this.moduleFuncCaller.bind(this);
   };
 
   callFunc(
     e, k,
     { mounted, functionsKeyName } = this.props,
-    { results: res } = this.state
+    { astFacts: res } = this.state
   ) {
     if (e) {
       e.preventDefault && (e.preventDefault());
@@ -62,10 +54,10 @@ class ReactModuleLoader extends React.Component {
     }
   }
 
-  flexHandler(
+  moduleFuncCaller(
     e, k, t, pi,
     { mounted, functionsKeyName } = this.props,
-    { results: res } = this.state
+    { astFacts: res } = this.state
   ) {
     if (e) {
       e.preventDefault && (e.preventDefault());
@@ -138,45 +130,56 @@ class ReactModuleLoader extends React.Component {
   }
 
   render() {
-    const { results: res } = this.state;
+    const { astFacts: ast } = this.state;
+    const paramDisplay = ({ fnKey, type, endElemIndex, param, paramIndex }) => (
+      <li key={endElemIndex}>
+        <p>
+          Parameter {paramIndex}:<br/>
+          Name:&nbsp;{param.name}<br/>
+          Desc:&nbsp;{param.description}<br/>
+          <input
+            type={type === 'string' || type === 'array' ? 'text' : 'number'}
+            onChange={(e) => this.moduleFuncCaller(e, fnKey, type, paramIndex)}/>
+          <span> (type: {type})</span>
+        </p>
+      </li>
+    );
     return (
       <div className='App'>
         <h1>React Module Loader</h1>
-        {Object.keys(results).map((k, i) => {
+        {Object.keys(astFacts).map((fnKey, fnKeyIndex) => {
           return (
-            <div key={i}>
+            <div key={fnKeyIndex}>
               <ul>
-                <li><h3>Function name: {k}</h3></li>
-                <li><strong>Description:</strong> {results[k].description}</li>
+                <li><h3>Function name: {fnKey}</h3></li>
+                <li><strong>Description:</strong> {astFacts[fnKey].description}</li>
                 <div>
-                  {results[k].params != undefined && (results[k].params === 'none' ? (
-                    <li><input type='submit' onClick={(e) => this.callFunc(e, k)}/></li>
+                  {astFacts[fnKey].params == undefined || !astFacts[fnKey].hasOwnProperty('params') ? (
+                    <li><input type='submit' onClick={(e) => this.callFunc(e, fnKey)}/></li>
                   ) : (
-                    Object.keys(results[k].params).map((p, pi) => {
-                      return (
-                        p && (results[k].params[p].length) ? (results[k].params[p].map((t, ti) => {
-                          t = t.toLowerCase();
+                    Object.keys(astFacts[fnKey].params).map((paramKey, paramIndex) => {
+                      if (
+                        astFacts[fnKey].params[paramKey] && astFacts[fnKey].params[paramKey].type
+                        && astFacts[fnKey].params[paramKey].type.names && astFacts[fnKey].params[paramKey].type.names.length
+                      ) {
+                        return astFacts[fnKey].params[paramKey].type.names.map((type, endElemIndex) => {
+                          type = type.toLowerCase();
                           return (
-                            <li key={ti}>
-                              <p>
-                                Parameter {pi}:&nbsp;
-                                <input
-                                  type={t === 'string' || t === 'array' ? 'text' : 'number'}
-                                  onChange={(e) => this.flexHandler(e, k, t, pi)}/>
-                                <span> (type: {t})</span>
-                              </p>
-                            </li>
+                            paramDisplay({fnKey, type, endElemIndex, param: astFacts[fnKey].params[paramKey], paramIndex})
                           );
-                        })) : null
+                        });
+                      }
+                      return (
+                        <h3 key={paramIndex}>Warn: Something went wrong. Param has no defined 'type'.</h3>
                       );
                     })
-                  ))}
+                  )}
                 </div>
                 <li>
-                  {res[k] && (res[k].return) && (
+                  {ast[fnKey] && (ast[fnKey].return) && (
                     <p>
                       <span>Returned value:&nbsp;</span>
-                      <strong>{res[k].return}</strong>
+                      <strong>{ast[fnKey].return}</strong>
                     </p>
                   )}
                 </li>
