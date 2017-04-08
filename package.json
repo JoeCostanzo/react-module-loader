@@ -1,8 +1,8 @@
 {
   "name": "react-module-loader",
-  "version": "1.0.2",
+  "version": "1.0.8",
   "description": "Loads ES6 modules (functions, etc) into interactive React component views",
-  "main": "./dist/index.js",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/JoeCostanzo/react-module-loader.git"
@@ -31,9 +31,7 @@
     "test-watch": "npm run mocha -- --watch --watch-extensions js"
   },
   "files": [
-    "./src/**/*.pug",
-    "./src/**/*.js",
-    "./dist/**/*.css"
+    "dist/"
   ],
   "devDependencies": {
     "babel-cli": "^6.6.4",
