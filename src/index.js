@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 const log = console.log;
 // TODO: Make each input more explicitly indicate required params / specs
 // TODO: error messaging if mis-called
@@ -10,7 +12,7 @@ let keptValues = {};
 class ReactModuleLoader extends React.Component {
   constructor(props) {
     super(props);
-    let { mounted, functionsKeyName, astKeyName } = this.props;
+    let { mounted, functionsKeyName, astKeyName, headerTitleVisible = false } = this.props;
     if (
       mounted
       && functionsKeyName
@@ -35,7 +37,7 @@ class ReactModuleLoader extends React.Component {
         }
       });
     }
-    this.state = { astFacts };
+    this.state = { astFacts, headerTitleVisible };
 
     this.moduleFuncCaller = this.moduleFuncCaller.bind(this);
   };
@@ -130,13 +132,13 @@ class ReactModuleLoader extends React.Component {
   }
 
   render() {
-    const { astFacts: ast } = this.state;
+    const { astFacts: ast, headerTitleVisible } = this.state;
     const paramDisplay = ({ fnKey, type, endElemIndex, param, paramIndex }) => (
       <li key={endElemIndex}>
         <p>
-          Parameter {paramIndex}:<br/>
-          Name:&nbsp;{param.name}<br/>
-          Desc:&nbsp;{param.description}<br/>
+          <strong className="underline-text">Parameter {paramIndex}</strong><br/>
+          <strong>Name:</strong>&nbsp;{param.name}<br/>
+          <strong>Desc:</strong>&nbsp;{param.description}<br/>
           <input
             type={type === 'string' || type === 'array' ? 'text' : 'number'}
             onChange={(e) => this.moduleFuncCaller(e, fnKey, type, paramIndex)}/>
@@ -146,7 +148,7 @@ class ReactModuleLoader extends React.Component {
     );
     return (
       <div className='App'>
-        <h1>React Module Loader</h1>
+        {headerTitleVisible && (<h1>React Module Loader</h1>)}
         {Object.keys(astFacts).map((fnKey, fnKeyIndex) => {
           return (
             <div key={fnKeyIndex}>
@@ -193,10 +195,11 @@ class ReactModuleLoader extends React.Component {
   }
 }
 
-ReactModuleLoader.defaultProps = {
-  mounted: 'object',
-  functionsKeyName: 'string',
-  astKeyName: 'string'
+ReactModuleLoader.propTypes = {
+  mounted: PropTypes.object.isRequired,
+  headerTitleVisible: PropTypes.bool,
+  functionsKeyName: PropTypes.string.isRequired,
+  astKeyName: PropTypes.string.isRequired
 };
 
 export default ReactModuleLoader;
