@@ -1,7 +1,7 @@
 {
   "name": "react-module-loader",
-  "version": "1.0.9",
-  "description": "Loads ES6 modules (functions, etc) into interactive React component views",
+  "version": "1.0.10",
+  "description": "Loads ES6 modules (functions, etc) within a React component as a procedurally generated interactive view element",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
@@ -53,6 +53,10 @@
     "react-addons-test-utils": "^15.0.0",
     "react": "^15.0.0",
     "react-dom": "^15.0.0",
+    "babel-runtime": "^6.6.1",
+    "gulp": "^3.9.1",
+    "gulp-sass": "^3.1.0",
+    "npm-run-all": "^4.0.2",
     "sinon": "^1.17.3"
   },
   "peerDependencies": {
@@ -60,10 +64,6 @@
     "react-dom": "~0.14.8 || ^15.0.0"
   },
   "dependencies": {
-    "babel-runtime": "^6.6.1",
-    "gulp": "^3.9.1",
-    "gulp-sass": "^3.1.0",
-    "npm-run-all": "^4.0.2",
     "prop-types": "^15.5.4"
   }
 }
