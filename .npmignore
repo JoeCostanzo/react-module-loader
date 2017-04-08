@@ -8,4 +8,3 @@ npm-debug.log
 .gitignore
 .editorconfig
 .npmignore
-node_modules/
