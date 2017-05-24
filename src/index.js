@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const log = console.log;
-// TODO: Make each input more explicitly indicate required params / specs
 // TODO: error messaging if mis-called
 // TODO: perhaps need attention for handling 'object' type param functions
 
